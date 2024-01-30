@@ -2,6 +2,7 @@ import './App.css'
 import MessageList from "./components/MessageList";
 import {useState} from "react";
 import Message from "./components/Message";
+import MessageForm from "./components/MessageForm";
 
 function App() {
   const [author, setAuthor] = useState('');
@@ -17,6 +18,7 @@ function App() {
       />
       <MessageList messagesList={messagesList}/>
       App
+      <MessageForm/>
     </>
   )
 }

@@ -7,7 +7,7 @@ interface messageProps {
 
 const Message: React.FC<messageProps> = ({author,message}) => (
     <div>
-      <p>{author}: {message}</p>
+      <p>Message{author} {message}</p>
     </div>
   );
 
