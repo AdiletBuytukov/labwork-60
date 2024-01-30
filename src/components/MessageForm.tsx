@@ -1,27 +1,34 @@
 import React from 'react';
 
 interface messageFormProps {
+  author: string;
+  message: string;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
   changeAuthor: (e: React.ChangeEvent<HTMLInputElement>) => void
   changeMessage: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const MessageForm: React.FC<messageFormProps> = ({onSubmit, changeMessage, changeAuthor}) => {
+const MessageForm: React.FC<messageFormProps> = ({onSubmit, changeMessage, changeAuthor, author, message}) => {
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className='flex-column d-flex align-items-start'>
+      <h4>Вы находитесь в чате, оставьте свое сообщение:</h4>
       <input
-        type="text"
+        className='form-control'
         name="author"
-        placeholder='Введите автора'
+        value={author}
+        placeholder='Введите логин'
         onChange={changeAuthor}
       />
+      <br/>
       <input
-        type="text"
+        className='form-control'
         name='message'
+        value={message}
         placeholder='Введите сообщение'
         onChange={changeMessage}
       />
-      <button>Отправить</button>
+      <br/>
+      <button className='btn btn-info mb-3'>Отправить</button>
     </form>
   );
 };

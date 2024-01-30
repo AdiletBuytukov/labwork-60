@@ -1,22 +1,25 @@
-import './App.css'
+import './App.css';
 import MessageList from "./components/MessageList";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import MessageForm from "./components/MessageForm";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
+const App = () => {
   const [author, setAuthor] = useState('');
   const [message, setMessage] = useState('');
-  const [messagesList, setMessagesList] = useState<{author: string; message: string}[]>([]);
-
-  const formSubmit = async (e: React.FormEvent<HTMLFormElement>)=> {
+  const [messagesList, setMessagesList] = useState<{ author: string; message: string }[]>([]);
+  const [lastMessage, setLastMessage] = useState();
+  const formSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const body = new URLSearchParams();
-    body.append('author', author);
-    body.append('message', message);
+    const url = 'http://146.185.154.90:8000/messages';
+
+    const data = new URLSearchParams();
+    data.set('author', author);
+    data.set('message', message);
 
     try {
-      const response = await fetch('http://146.185.154.90:8000/messages', {method: 'POST', body});
+      const response = await fetch(url, {method: 'POST', body: data});
       const newMessage = await response.json();
 
       setMessagesList((prevMessage) => [...prevMessage, newMessage]);
@@ -25,9 +28,40 @@ function App() {
       setMessage('');
 
     } catch (error) {
-      console.log('Reason: ', error)
+      console.log('Возникла ошибка: ', error)
     }
   }
+
+  const displayedMessage = () => {
+    return messagesList.map((message) => ({
+      author: message.author,
+      message: message.message,
+    }))
+  }
+
+  const fetchMessage = async () => {
+    try {
+      const url = lastMessage ? `http://146.185.154.90:8000/messages?datetime=${encodeURIComponent(lastMessage)}`
+        : 'http://146.185.154.90:8000/messages';
+
+      const response = await fetch(url);
+      const newMessage = await response.json();
+
+      if (newMessage.length > 0) {
+        setLastMessage(newMessage[newMessage.length - 1]);
+        setMessagesList([...displayedMessage(), ...newMessage]);
+      }
+    } catch (error) {
+      console.log('Возникла ошибка: ', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchMessage();
+    const intervalMessageTime = setInterval(fetchMessage, 3000);
+
+    return () => clearInterval(intervalMessageTime)
+  }, []);
 
   return (
     <>
